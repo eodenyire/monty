@@ -1,57 +1,43 @@
 #include "monty.h"
 
 /**
- * f_push - Function to add a node to the stack.
- * @head: Pointer to the head of the stack.
- * @counter: Line number in the Monty byte code file.
- *
- * Return: No return value.
+ * f_push - Adds a node to the stack or queue.
+ * @head: Pointer to the head of the stack or queue.
+ * @counter: Line number in the Monty bytecode file.
  */
 void f_push(stack_t **head, unsigned int counter)
 {
-        int n, j = 0, flag = 0;
+    int n, j = 0;
+    char *arg = bus.arg;
 
-        /* Check if the argument is provided */
-        if (bus.arg)
+    if (arg == NULL)
+    {
+        fprintf(stderr, "L%d: usage: push integer\n", counter);
+        fclose(bus.file);
+        free(bus.content);
+        free_stack(*head);
+        exit(EXIT_FAILURE);
+    }
+
+    if (arg[0] == '-')
+        j++;
+
+    for (; arg[j] != '\0'; j++)
+    {
+        if (arg[j] < '0' || arg[j] > '9')
         {
-                /* Handle negative numbers */
-                if (bus.arg[0] == '-')
-                        j++;
-
-                /* Check if the argument is a valid integer */
-                for (; bus.arg[j] != '\0'; j++)
-                {
-                        if (bus.arg[j] > 57 || bus.arg[j] < 48)
-                                flag = 1;
-                }
-
-                /* Print error message if the argument is not an integer */
-                if (flag == 1)
-                {
-                        fprintf(stderr, "L%d: usage: push integer\n", counter);
-                        fclose(bus.file);
-                        free(bus.content);
-                        free_stack(*head);
-                        exit(EXIT_FAILURE);
-                }
+            fprintf(stderr, "L%d: usage: push integer\n", counter);
+            fclose(bus.file);
+            free(bus.content);
+            free_stack(*head);
+            exit(EXIT_FAILURE);
         }
-        else
-        {
-                /* Print error message if no argument is provided */
-                fprintf(stderr, "L%d: usage: push integer\n", counter);
-                fclose(bus.file);
-                free(bus.content);
-                free_stack(*head);
-                exit(EXIT_FAILURE);
-        }
+    }
 
-        /* Convert the argument to an integer */
-        n = atoi(bus.arg);
+    n = atoi(arg);
 
-        /* Add node to the stack or queue based on lifo flag */
-        if (bus.lifo == 0)
-                addnode(head, n);
-        else
-                addqueue(head, n);
+    if (bus.lifi == 0)
+        addnode(head, n);
+    else
+        addqueue(head, n);
 }
-
